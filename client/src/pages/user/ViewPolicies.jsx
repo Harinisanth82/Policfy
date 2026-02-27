@@ -372,7 +372,8 @@ const ViewPolicies = () => {
         };
 
         fetchData();
-    }, [currentUser, dispatch]);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [currentUser?._id, dispatch]);
 
     if (loading) {
         return <Loader />;
