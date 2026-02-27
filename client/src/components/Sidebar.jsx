@@ -1,7 +1,7 @@
 import React from 'react';
 import styled from 'styled-components';
 import { useSelector } from 'react-redux';
-import { NavLink, Link } from 'react-router-dom';
+import { NavLink } from 'react-router-dom';
 import {
     DashboardRounded,
     PolicyRounded,
@@ -10,10 +10,6 @@ import {
     PeopleRounded,
     PersonAddRounded
 } from '@mui/icons-material';
-import LightLogoImg from '../assets/images/logo.png';
-import DarkLogoImg from '../assets/images/Dark_logo.jpg';
-import { useTheme } from '../context/ThemeContext';
-
 
 const SidebarContainer = styled.div`
     flex: 0 0 250px;
@@ -140,7 +136,6 @@ const CloseButton = styled.div`
 
 const Sidebar = ({ isOpen, toggleSidebar }) => {
     const { currentUser } = useSelector(state => state.user);
-    const { isDarkMode } = useTheme();
     const role = currentUser?.role || 'user';
 
     return (

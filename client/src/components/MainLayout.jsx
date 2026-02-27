@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
-import { Outlet, useLocation } from 'react-router-dom';
+import { Outlet } from 'react-router-dom';
 import Sidebar from './Sidebar';
 import { MenuRounded, LogoutRounded, PersonRounded, DarkModeRounded, LightModeRounded } from '@mui/icons-material';
 import { useTheme } from '../context/ThemeContext';
 import LightLogoImg from '../assets/images/logo.png';
 import DarkLogoImg from '../assets/images/Dark_logo.jpg';
-import { useDispatch, useSelector } from 'react-redux';
+import { useSelector } from 'react-redux';
 import { useAuth } from '../context/AuthContext';
 
 const Container = styled.div`
@@ -173,23 +173,9 @@ const ContentArea = styled.div`
 
 const MainLayout = () => {
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
-    const dispatch = useDispatch();
     const { currentUser } = useSelector(state => state.user);
-    const { logout } = useAuth();
-    const location = useLocation();
-    const { toggleTheme, isDarkMode } = useTheme();
-
     const toggleSidebar = () => {
         setIsSidebarOpen(!isSidebarOpen);
-    };
-
-    const getPageTitle = () => {
-        const path = location.pathname;
-        if (path.includes('dashboard')) return 'Policy Dashboard';
-        if (path.includes('policies')) return 'Policies';
-        if (path.includes('applications')) return 'My Applications';
-        if (path.includes('profile')) return 'Profile';
-        return 'Policy Distributor';
     };
 
     return (

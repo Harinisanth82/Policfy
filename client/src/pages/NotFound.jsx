@@ -1,7 +1,6 @@
 import React from 'react';
 import styled from 'styled-components';
 import { useNavigate } from 'react-router-dom';
-import { useTheme } from 'styled-components';
 
 const Container = styled.div`
     display: flex;
@@ -96,39 +95,7 @@ const HomeButton = styled.button`
     }
 `;
 
-// SVG Wire Illustration
-const WireIllustration = () => {
-    const theme = useTheme();
-    const color = theme.primary || '#3f51b5';
 
-    return (
-        <svg width="300" height="300" viewBox="0 0 300 300" fill="none" xmlns="http://www.w3.org/2000/svg">
-            {/* Socket/Wall */}
-            <circle cx="280" cy="50" r="8" fill="#FF5252" />
-            <circle cx="260" cy="50" r="8" fill="#FFC107" />
-            <circle cx="240" cy="50" r="8" fill="#4CAF50" />
-
-            {/* Wire Path */}
-            <path
-                d="M150 50 C 150 150, 50 150, 50 200 C 50 250, 150 250, 150 300"
-                stroke={color}
-                strokeWidth="8"
-                strokeLinecap="round"
-                fill="none"
-            />
-
-            {/* Plug Head (Simplified) */}
-            <path d="M140 40 L160 40 L160 60 L140 60 Z" fill={color} />
-            <rect x="145" y="25" width="4" height="15" fill="#333" />
-            <rect x="151" y="25" width="4" height="15" fill="#333" />
-
-            {/* Sparks/Disconnect */}
-            <circle cx="150" cy="300" r="3" fill="#333" />
-            <circle cx="140" cy="290" r="2" fill="#333" />
-            <circle cx="160" cy="310" r="2" fill="#333" />
-        </svg>
-    );
-};
 
 const NotFound = () => {
     const navigate = useNavigate();

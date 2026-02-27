@@ -200,7 +200,6 @@ const AddPolicy = () => {
         description: ''
     });
 
-    const [error, setError] = useState('');
 
     const handleChange = (e) => {
         const { name, value } = e.target;
@@ -214,7 +213,11 @@ const AddPolicy = () => {
         e.preventDefault();
 
         if (policyData.description.length > 200) {
-            setError(`Description cannot exceed 200 characters. Current count: ${policyData.description.length}`);
+            Swal.fire({
+                icon: 'error',
+                title: 'Error!',
+                text: `Description cannot exceed 200 characters. Current count: ${policyData.description.length}`
+            });
             return;
         }
 
