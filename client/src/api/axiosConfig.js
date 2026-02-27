@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const instance = axios.create({
-    baseURL: 'http://localhost:5001/api', // Adjust base URL as needed
+    baseURL: 'https://policfy-api.onrender.com/api',
     timeout: 10000,
 });
 
