@@ -269,7 +269,8 @@ const MyApplications = () => {
         } else {
             setLoading(false);
         }
-    }, [currentUser]);
+        // eslint-disable-next-line react-hooks/exhaustive-deps
+    }, [currentUser?._id]);
 
     const filteredApps = (filter === 'All'
         ? applications
