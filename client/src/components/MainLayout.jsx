@@ -174,6 +174,9 @@ const ContentArea = styled.div`
 const MainLayout = () => {
     const [isSidebarOpen, setIsSidebarOpen] = useState(false);
     const { currentUser } = useSelector(state => state.user);
+    const { logout } = useAuth();
+    const { toggleTheme, isDarkMode } = useTheme();
+
     const toggleSidebar = () => {
         setIsSidebarOpen(!isSidebarOpen);
     };
