@@ -372,7 +372,7 @@ const ViewPolicies = () => {
         };
 
         fetchData();
-    }, [currentUser?._id, dispatch]);
+    }, [currentUser, dispatch]);
 
     if (loading) {
         return <Loader />;

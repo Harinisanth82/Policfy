@@ -6,7 +6,7 @@ import {
     Undo,
     Search
 } from '@mui/icons-material';
-import { getAllApplications, updateApplicationStatus, deleteApplication } from '../../api';
+import { getAllApplications, updateApplicationStatus } from '../../api';
 import Loader from '../../components/Loader';
 import TablePagination from '../../components/TablePagination';
 import Swal from 'sweetalert2';

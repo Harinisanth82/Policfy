@@ -269,7 +269,7 @@ const MyApplications = () => {
         } else {
             setLoading(false);
         }
-    }, [currentUser?._id]);
+    }, [currentUser]);
 
     const filteredApps = (filter === 'All'
         ? applications
