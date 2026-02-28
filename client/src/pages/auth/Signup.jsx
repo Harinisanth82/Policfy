@@ -192,8 +192,8 @@ const Signup = () => {
   };
 
   const handleGoogleLogin = () => {
-    const GOOGLE_CLIENT_ID = process.env.REACT_APP_GOOGLE_CLIENT_ID;
-    const REDIRECT_URI = "http://localhost:5001/api/auth/google/callback";
+    const GOOGLE_CLIENT_ID = "1080134266389-mb95890qau13qhr4ijgdqn4vnbade5mh.apps.googleusercontent.com";
+    const REDIRECT_URI = "https://policfy-api.onrender.com/api/auth/google/callback";
     const scope = "profile email";
     const responseType = "code";
 

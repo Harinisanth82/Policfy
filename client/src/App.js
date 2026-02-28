@@ -21,6 +21,7 @@ import AddPolicy from './pages/admin/AddPolicy';
 import EditPolicy from './pages/admin/EditPolicy';
 import AddAdmin from './pages/admin/AddAdmin';
 import NotFound from './pages/NotFound';
+import DashboardRedirect from './components/DashboardRedirect';
 
 import ProtectedRoute from './components/ProtectedRoute';
 import { AuthProvider } from './context/AuthContext';
@@ -44,7 +45,7 @@ function App() {
                         }>
 
                             {/* Admin Routes */}
-                            <Route index element={<AdminDashboard />} />
+                            <Route index element={<DashboardRedirect />} />
                             <Route path="admin/dashboard" element={<AdminDashboard />} />
                             <Route path="admin/users" element={<Users />} />
                             <Route path="admin/policies" element={<Policies />} />
