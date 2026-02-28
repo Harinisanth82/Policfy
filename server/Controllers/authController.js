@@ -205,7 +205,7 @@ export const googleAuthCallback = async (req, res) => {
 
         // Use dynamic client URL based on environment or fallback to production Netlify URL
         const frontendUrl = process.env.NODE_ENV === 'production'
-            ? 'https://policy-distributor-final.netlify.app' // NOTE: Update this if the Netlify URL is different
+            ? 'https://policfy.netlify.app' // Updated exact Netlify URL
             : (process.env.CLIENT_URL || 'http://localhost:3000');
 
         // Redirect to client with token
@@ -214,7 +214,7 @@ export const googleAuthCallback = async (req, res) => {
     } catch (error) {
         console.error("Google Auth Callback Error:", error);
         const frontendUrl = process.env.NODE_ENV === 'production'
-            ? 'https://policy-distributor-final.netlify.app' // NOTE: Update this if the Netlify URL is different
+            ? 'https://policfy.netlify.app' // Updated exact Netlify URL
             : (process.env.CLIENT_URL || 'http://localhost:3000');
 
         res.redirect(`${frontendUrl}/login?error=GoogleAuthFailed`);
