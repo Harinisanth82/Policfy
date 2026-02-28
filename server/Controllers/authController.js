@@ -162,7 +162,13 @@ export const googleAuthCallback = async (req, res) => {
     const { code } = req.query;
 
     try {
-        const redirectUrl = `${process.env.SERVER_URL}/api/auth/google/callback`;
+        // Use dynamic redirect URL based on environment or fallback to production Render URL
+        const backendUrl = process.env.NODE_ENV === 'production'
+            ? 'https://policfy-api.onrender.com'
+            : (process.env.SERVER_URL || 'http://localhost:5001');
+
+        const redirectUrl = `${backendUrl}/api/auth/google/callback`;
+
         const client = new OAuth2Client(
             process.env.GOOGLE_CLIENT_ID,
             process.env.GOOGLE_CLIENT_SECRET,
@@ -197,11 +203,20 @@ export const googleAuthCallback = async (req, res) => {
         user.currentSessionToken = token;
         await user.save();
 
+        // Use dynamic client URL based on environment or fallback to production Netlify URL
+        const frontendUrl = process.env.NODE_ENV === 'production'
+            ? 'https://policy-distributor-final.netlify.app' // NOTE: Update this if the Netlify URL is different
+            : (process.env.CLIENT_URL || 'http://localhost:3000');
+
         // Redirect to client with token
-        res.redirect(`${process.env.CLIENT_URL}/login?token=${token}`);
+        res.redirect(`${frontendUrl}/login?token=${token}`);
 
     } catch (error) {
         console.error("Google Auth Callback Error:", error);
-        res.redirect(`${process.env.CLIENT_URL}/login?error=GoogleAuthFailed`);
+        const frontendUrl = process.env.NODE_ENV === 'production'
+            ? 'https://policy-distributor-final.netlify.app' // NOTE: Update this if the Netlify URL is different
+            : (process.env.CLIENT_URL || 'http://localhost:3000');
+
+        res.redirect(`${frontendUrl}/login?error=GoogleAuthFailed`);
     }
 };
