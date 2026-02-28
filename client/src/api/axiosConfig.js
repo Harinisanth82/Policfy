@@ -1,4 +1,6 @@
 import axios from 'axios';
+import store from '../redux/store';
+import { logout } from '../redux/userSlice';
 
 const instance = axios.create({
     baseURL: 'https://policfy-api.onrender.com/api',
@@ -39,6 +41,22 @@ instance.interceptors.request.use(
         return config;
     },
     (error) => {
+        return Promise.reject(error);
+    }
+);
+
+// Add a response interceptor to handle 401 errors
+instance.interceptors.response.use(
+    (response) => response,
+    (error) => {
+        if (error.response && error.response.status === 401) {
+            store.dispatch(logout());
+            localStorage.removeItem('user');
+            // Check if we are already on login page to avoid redirect loops
+            if (window.location.pathname !== '/login') {
+                window.location.href = '/login';
+            }
+        }
         return Promise.reject(error);
     }
 );
