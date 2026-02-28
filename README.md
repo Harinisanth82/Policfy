@@ -1,7 +1,5 @@
 # 🎯 Policy Distributor
 
-![Policy Distributor Banner](file:///C:/Users/harin/.gemini/antigravity/brain/62dab890-16f4-417a-abe7-8c48e997ec70/policy_distributor_banner_1772169542297.png)
-
 A comprehensive, full-stack insurance policy management system designed to streamline the distribution and tracking of insurance policies. Built with a modern tech stack, it provides a seamless experience for both administrators and policy seekers.
 
 ## 🚀 Key Features
