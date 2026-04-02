@@ -26,6 +26,10 @@ const FormContainer = styled.div`
   height: 100%;
   max-width: 550px;
   padding: 20px;
+
+  @media (max-width: 480px) {
+    padding: 10px 0;
+  }
 `;
 
 const InputWrapper = styled.div`
@@ -77,6 +81,10 @@ const Title = styled.div`
   color: ${({ theme }) => theme.text_primary};
   margin-top: 10px;
   text-align: center;
+
+  @media (max-width: 480px) {
+    font-size: 24px;
+  }
 `;
 
 const Span = styled.div`
@@ -312,7 +320,7 @@ const Login = () => {
         </div>
       </div>
 
-      <div style={{ marginTop: 'auto', fontSize: '14px', color: theme.text_secondary, padding: '20px 0' }}>
+      <div style={{ marginTop: 'auto', fontSize: '14px', color: theme.text_secondary, padding: '20px 0', textAlign: 'center', width: '100%' }}>
         Don't have an account? <StyledLink to="/signup" style={{ marginLeft: '4px' }}>Sign Up</StyledLink>
       </div>
     </FormContainer>

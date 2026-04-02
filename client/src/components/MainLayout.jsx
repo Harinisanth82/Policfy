@@ -8,6 +8,7 @@ import LightLogoImg from '../assets/images/logo.png';
 import DarkLogoImg from '../assets/images/Dark_logo.jpg';
 import { useSelector } from 'react-redux';
 import { useAuth } from '../context/AuthContext';
+import Chatbot from './Chatbot';
 
 const Container = styled.div`
     display: flex;
@@ -34,7 +35,7 @@ const Header = styled.div`
     z-index: 10;
     
     @media (max-width: 768px) {
-        padding: 16px 20px;
+        padding: 12px 16px;
     }
 `;
 
@@ -47,8 +48,8 @@ const HeaderTitle = styled.div`
     gap: 12px;
     
     @media (max-width: 768px) {
-        font-size: 16px;
-        gap: 8px;
+        font-size: 15px;
+        gap: 6px;
     }
 `;
 
@@ -193,7 +194,7 @@ const MainLayout = () => {
                         <LogoIcon>
                             <Logo src={isDarkMode ? DarkLogoImg : LightLogoImg} alt="Logo" />
                         </LogoIcon>
-                        Policy Distributor
+                        Policfy
                     </HeaderTitle>
 
                     <UserSection>
@@ -216,6 +217,7 @@ const MainLayout = () => {
                 </Header>
                 <ContentArea>
                     <Outlet />
+                    {currentUser && currentUser.role !== 'admin' && currentUser.role !== 'Admin' && <Chatbot />}
                 </ContentArea>
             </ContentWrapper>
         </Container>

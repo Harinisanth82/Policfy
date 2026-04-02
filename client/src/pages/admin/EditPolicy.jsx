@@ -8,15 +8,14 @@ import Swal from 'sweetalert2';
 
 
 const Container = styled.div`
-    padding: 30px;
+    padding: 0 30px 30px 30px;
     background: ${({ theme }) => theme.bgLight || '#f4f6f8'};
     display: flex;
     flex-direction: column;
-    gap: 24px;
-    height: 100vh;
+    min-height: 100%;
+
     @media (max-width: 768px) {
-        padding: 20px;
-        gap: 16px;
+        padding: 0 20px 20px 20px;
     }
 `;
 
@@ -24,6 +23,16 @@ const Header = styled.div`
     display: flex;
     align-items: center;
     gap: 16px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: ${({ theme }) => theme.bgLight || '#f4f6f8'};
+    padding: 30px 0 24px 0;
+    
+    @media (max-width: 768px) {
+        padding: 16px 0;
+        gap: 12px;
+    }
 `;
 
 const BackButton = styled.button`
@@ -46,6 +55,8 @@ const HeaderText = styled.div`
     display: flex;
     flex-direction: column;
     gap: 4px;
+    flex: 1;
+    min-width: 0; /* Prevents overflow */
 `;
 
 const Title = styled.h1`
@@ -53,11 +64,21 @@ const Title = styled.h1`
     font-weight: 700;
     color: ${({ theme }) => theme.text_primary};
     margin: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    
+    @media (max-width: 768px) {
+        font-size: 20px;
+    }
 `;
 
 const Subtitle = styled.div`
     font-size: 14px;
     color: ${({ theme }) => theme.text_secondary};
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
 `;
 
 const FormCard = styled.div`
@@ -171,6 +192,13 @@ const Button = styled.button`
     display: flex;
     align-items: center;
     gap: 8px;
+    white-space: nowrap;
+    flex-shrink: 0;
+
+    @media (max-width: 768px) {
+        padding: 8px 16px;
+        font-size: 13px;
+    }
 
     ${({ $primary, theme }) => $primary ? `
         background-color: ${theme.primary};

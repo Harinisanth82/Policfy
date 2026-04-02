@@ -10,6 +10,8 @@ import Authentication from './pages/auth/Authentication';
 import UserDashboard from './pages/user/UserDashboard';
 import ViewPolicies from './pages/user/ViewPolicies';
 import PolicyDetails from './pages/user/PolicyDetails';
+import PolicyAnalysis from './pages/user/PolicyAnalysis';
+import GetDetails from './pages/user/GetDetails';
 import MyApplications from './pages/user/MyApplications';
 
 // Admin Pages
@@ -58,6 +60,8 @@ function App() {
                             <Route path="user/dashboard" element={<UserDashboard />} />
                             <Route path="user/policies" element={<ViewPolicies />} />
                             <Route path="user/policy/:id" element={<PolicyDetails />} />
+                            <Route path="user/policy/:id/analysis" element={<PolicyAnalysis />} />
+                            <Route path="user/policy/:id/getdetails" element={<GetDetails />} />
                             <Route path="user/my-applications" element={<MyApplications />} />
                         </Route>
 

@@ -73,6 +73,16 @@ export const deletePolicy = async (id) => {
     return response.data;
 };
 
+export const analyzePolicyApi = async (id) => {
+    const response = await axios.post('/policies/analyze', { id });
+    return response.data;
+};
+
+export const generatePolicyForm = async (payload) => {
+    const response = await axios.post('/policies/generate-form', payload);
+    return response.data;
+};
+
 // Application Services
 export const applyForPolicy = async (applicationData) => {
     const response = await axios.post('/applications/apply', applicationData);
@@ -99,6 +109,12 @@ export const deleteApplication = async (id) => {
     return response.data;
 };
 
+export const bulkDeleteApplications = async (range) => {
+    // range = { startDate, endDate }
+    const response = await axios.post('/applications/bulk-delete', range);
+    return response.data;
+};
+
 // Dashboard Services
 export const getUserStats = async () => {
     const response = await axios.get('/dashboard/user-stats');
@@ -107,5 +123,11 @@ export const getUserStats = async () => {
 
 export const getAdminStats = async () => {
     const response = await axios.get('/dashboard/admin-stats');
+    return response.data;
+};
+
+// Chatbot Services
+export const sendChatbotMessage = async (payload) => {
+    const response = await axios.post('/chat', payload);
     return response.data;
 };

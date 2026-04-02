@@ -184,7 +184,7 @@ const Navbar = () => {
         </Mobileicon>
         <NavLogo to="/">
           <Logo src={isDarkMode ? DarkLogoImg : LightLogoImg} alt="Logo" />
-          Policy Distributor
+          Policfy
         </NavLogo>
 
         {/* <MobileMenu $isOpen={isOpen}> */}

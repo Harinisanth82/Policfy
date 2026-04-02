@@ -8,15 +8,14 @@ import Swal from 'sweetalert2';
 // --- Styled Components ---
 
 const Container = styled.div`
-    padding: 30px;
+    padding: 0 30px 30px 30px;
     background: ${({ theme }) => theme.bgLight || '#f4f6f8'};
     display: flex;
     flex-direction: column;
-    gap: 24px;
-    height: 100vh;
+    min-height: 100%;
+
     @media (max-width: 768px) {
-        padding: 20px;
-        gap: 16px;
+        padding: 0 20px 20px 20px;
     }
 `;
 
@@ -24,6 +23,15 @@ const Header = styled.div`
     display: flex;
     align-items: center;
     gap: 16px;
+    position: sticky;
+    top: 0;
+    z-index: 100;
+    background: ${({ theme }) => theme.bgLight || '#f4f6f8'};
+    padding: 30px 0 24px 0;
+    
+    @media (max-width: 768px) {
+        padding: 20px 0 16px 0;
+    }
 `;
 
 const BackButton = styled.button`
@@ -155,6 +163,11 @@ const Actions = styled.div`
     margin-top: 24px;
     border-top: 1px solid ${({ theme }) => theme.text_secondary}20;
     padding-top: 24px;
+
+    @media (max-width: 768px) {
+        flex-direction: column-reverse;
+        justify-content: stretch;
+    }
 `;
 
 const Button = styled.button`
@@ -166,6 +179,7 @@ const Button = styled.button`
     transition: all 0.2s ease;
     display: flex;
     align-items: center;
+    justify-content: center;
     gap: 8px;
 
     ${({ $primary, theme }) => $primary ? `
@@ -184,6 +198,11 @@ const Button = styled.button`
             color: ${theme.text_primary};
         }
     `}
+
+    @media (max-width: 768px) {
+        width: 100%;
+        padding: 12px;
+    }
 `;
 
 const AddPolicy = () => {

@@ -38,6 +38,10 @@ const Title = styled.h1`
     font-weight: 600; // Reduced from 700
     color: ${({ theme }) => theme.text_primary};
     margin: 0;
+
+    @media (max-width: 768px) {
+        font-size: 22px;
+    }
 `;
 
 const StatValue = styled.div`
@@ -45,6 +49,10 @@ const StatValue = styled.div`
     font-weight: 600; // Reduced from 700
     color: ${({ theme }) => theme.text_primary}; // Dark / Black
     line-height: 1.2;
+
+    @media (max-width: 768px) {
+        font-size: 24px;
+    }
 `;
 
 const Subtitle = styled.div`
@@ -75,6 +83,10 @@ const Card = styled.div`
     &:hover {
         transform: translateY(-2px);
         box-shadow: 0px 8px 20px rgba(0, 0, 0, 0.15); /* Stronger hover shadow */
+    }
+
+    @media (max-width: 768px) {
+        padding: 16px; // Reduced padding for mobile
     }
 `;
 

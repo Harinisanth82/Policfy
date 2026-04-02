@@ -14,6 +14,21 @@ import { getUserApplications, deleteApplication } from '../../api';
 import Loader from '../../components/Loader';
 import Swal from 'sweetalert2';
 
+const Toast = Swal.mixin({
+    toast: true,
+    position: 'top-end',
+    showConfirmButton: false,
+    timer: 3000,
+    timerProgressBar: true,
+    customClass: {
+        popup: 'toast-below-nav'
+    },
+    didOpen: (toast) => {
+        toast.addEventListener('mouseenter', Swal.stopTimer);
+        toast.addEventListener('mouseleave', Swal.resumeTimer);
+    }
+});
+
 const Container = styled.div`
     padding: 22px 30px 30px 30px;
     background: ${({ theme }) => theme.bgLight || '#f4f6f8'};
@@ -98,6 +113,11 @@ const CardHeader = styled.div`
     align-items: flex-start;
     gap: 16px;
     flex-wrap: nowrap;
+
+    @media (max-width: 768px) {
+        flex-direction: column;
+        gap: 12px;
+    }
 `;
 
 const PolicyInfo = styled.div`
@@ -311,18 +331,16 @@ const MyApplications = () => {
 
                 await deleteApplication(id);
                 setApplications(prev => prev.filter(app => app.id !== id));
-                await Swal.fire(
-                    'Cancelled!',
-                    'Your application has been cancelled.',
-                    'success'
-                );
+                Toast.fire({
+                    icon: 'success',
+                    title: 'Application Cancelled'
+                });
             } catch (error) {
                 console.error("Error canceling application:", error);
-                await Swal.fire(
-                    'Error!',
-                    error.response?.data?.message || 'Failed to cancel application.',
-                    'error'
-                );
+                Toast.fire({
+                    icon: 'error',
+                    title: error.response?.data?.message || 'Failed to cancel application'
+                });
             } finally {
                 setDeletingId(null);
             }

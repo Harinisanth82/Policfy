@@ -1,0 +1,3 @@
+﻿ac-civyney-shard-00-02.i023lfk.mongodb.net
+ac-civyney-shard-00-01.i023lfk.mongodb.net
+ac-civyney-shard-00-00.i023lfk.mongodb.net

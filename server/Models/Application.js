@@ -16,6 +16,10 @@ const applicationSchema = new mongoose.Schema({
         enum: ['pending', 'approved', 'rejected'],
         default: 'pending'
     },
+    customDetails: {
+        type: mongoose.Schema.Types.Mixed,
+        default: {}
+    },
     applicationDate: {
         type: Date,
         default: Date.now

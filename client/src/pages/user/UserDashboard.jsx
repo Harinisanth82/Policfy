@@ -31,6 +31,10 @@ const Title = styled.h1`
     font-weight: 700;
     color: ${({ theme }) => theme.text_primary};
     margin: 0;
+
+    @media (max-width: 768px) {
+        font-size: 22px;
+    }
 `;
 
 const Subtitle = styled.p`
@@ -60,6 +64,10 @@ const StatCard = styled.div`
         transform: translateY(-2px);
         box-shadow: 0px 8px 20px rgba(0, 0, 0, 0.15); /* Stronger hover shadow */
     }
+
+    @media (max-width: 768px) {
+        padding: 16px; // Reduced padding for mobile
+    }
 `;
 
 const StatInfo = styled.div`
@@ -78,6 +86,10 @@ const StatValue = styled.div`
     font-size: 32px;
     font-weight: 700;
     color: ${({ theme }) => theme.text_primary};
+    
+    @media (max-width: 768px) {
+        font-size: 26px;
+    }
 `;
 
 const IconBox = styled.div`

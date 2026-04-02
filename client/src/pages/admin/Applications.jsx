@@ -1,15 +1,31 @@
 import React, { useState, useEffect } from 'react';
-import styled from 'styled-components';
+import styled, { useTheme } from 'styled-components';
 import {
     CheckCircle as CheckCircleIcon,
     Cancel as CancelIcon,
     Undo,
-    Search
+    Search,
+    Delete
 } from '@mui/icons-material';
-import { getAllApplications, updateApplicationStatus } from '../../api';
+import { getAllApplications, updateApplicationStatus, bulkDeleteApplications } from '../../api';
 import Loader from '../../components/Loader';
 import TablePagination from '../../components/TablePagination';
 import Swal from 'sweetalert2';
+
+const Toast = Swal.mixin({
+    toast: true,
+    position: 'top-end',
+    showConfirmButton: false,
+    timer: 3000,
+    timerProgressBar: true,
+    customClass: {
+        popup: 'toast-below-nav'
+    },
+    didOpen: (toast) => {
+        toast.addEventListener('mouseenter', Swal.stopTimer);
+        toast.addEventListener('mouseleave', Swal.resumeTimer);
+    }
+});
 
 
 
@@ -130,16 +146,29 @@ const TableContainer = styled.div`
     width: 100%;
     overflow-x: auto;
     padding-bottom: 12px;
+
+    @media (max-width: 768px) {
+        overflow-x: hidden;
+    }
 `;
 
 const Table = styled.table`
     width: 100%;
     border-collapse: collapse;
     min-width: 900px;
+    
+    @media (max-width: 768px) {
+        min-width: 100%;
+        display: block;
+    }
 `;
 
 const Thead = styled.thead`
     border-bottom: 2px solid ${({ theme }) => theme.text_secondary}10;
+    
+    @media (max-width: 768px) {
+        display: none;
+    }
 `;
 
 const Th = styled.th`
@@ -161,6 +190,17 @@ const Tr = styled.tr`
     &:hover {
         background: ${({ theme }) => theme.bgLight}50;
     }
+
+    @media (max-width: 768px) {
+        display: flex;
+        flex-direction: column;
+        background: ${({ theme }) => theme.bgLight}30;
+        border: 1px solid ${({ theme }) => theme.text_secondary}20;
+        border-radius: 12px;
+        padding: 16px;
+        margin-bottom: 16px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+    }
 `;
 
 const Td = styled.td`
@@ -169,11 +209,46 @@ const Td = styled.td`
     color: ${({ theme }) => theme.text_primary};
     vertical-align: middle;
     text-align: ${({ $align }) => $align || 'left'};
+
+    @media (max-width: 768px) {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 10px 0;
+        text-align: right;
+        border-bottom: 1px dashed ${({ theme }) => theme.text_secondary}20;
+        
+        &:last-child {
+            border-bottom: none;
+            padding-bottom: 0;
+            padding-top: 16px;
+            margin-top: 4px;
+            justify-content: flex-end;
+        }
+
+        &::before {
+            content: attr(data-label);
+            font-weight: 600;
+            color: ${({ theme }) => theme.text_secondary};
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-right: 16px;
+            flex-shrink: 0;
+        }
+    }
 `;
 
 const ApplicantName = styled.div`
     font-weight: 600;
     color: ${({ theme }) => theme.text_primary};
+    cursor: pointer;
+    transition: color 0.2s ease, text-decoration 0.2s ease;
+    
+    &:hover {
+        color: ${({ theme }) => theme.primary};
+        text-decoration: underline;
+    }
 `;
 
 
@@ -239,13 +314,137 @@ const ActionButton = styled.button`
     }
 `;
 
+const ModalOverlay = styled.div`
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background-color: rgba(0, 0, 0, 0.6);
+    backdrop-filter: blur(3px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    animation: fadeIn 0.3s ease-out;
 
+    @keyframes fadeIn {
+        from { opacity: 0; }
+        to { opacity: 1; }
+    }
+`;
 
+const ModalContent = styled.div`
+    background: ${({ theme }) => theme.bg === '#000000' ? '#111111' : '#FFFFFF'};
+    padding: 32px;
+    border-radius: 20px;
+    width: 90%;
+    max-width: 500px;
+    display: flex;
+    flex-direction: column;
+    gap: 24px;
+    border: 1px solid ${({ theme }) => theme.text_secondary}20;
+    box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.6);
+    position: relative;
+    animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    color: ${({ theme }) => theme.text_primary};
+
+    @keyframes slideUp {
+        from { transform: translateY(30px); opacity: 0; }
+        to { transform: translateY(0); opacity: 1; }
+    }
+`;
+
+const ModalHeader = styled.div`
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+`;
+
+const RangeContainer = styled.div`
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+    margin-top: 10px;
+
+    @media (max-width: 480px) {
+        grid-template-columns: 1fr;
+    }
+`;
+
+const DateField = styled.div`
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+`;
+
+const Label = styled.label`
+    font-size: 13px;
+    font-weight: 600;
+    color: ${({ theme }) => theme.text_secondary};
+    text-transform: uppercase;
+`;
+
+const StyledInput = styled.input`
+    padding: 14px 18px;
+    border-radius: 14px;
+    border: 1px solid ${({ theme }) => theme.text_secondary}30;
+    background: ${({ theme }) => theme.bg === '#000000' ? '#000000' : '#F8F9FA'};
+    color: ${({ theme }) => theme.text_primary};
+    font-family: inherit;
+    font-size: 15px;
+    outline: none;
+    transition: all 0.2s ease;
+    width: 100%;
+    box-sizing: border-box;
+
+    &:focus {
+        border-color: ${({ theme }) => theme.primary};
+        background: ${({ theme }) => theme.bg === '#000000' ? '#080808' : '#FFFFFF'};
+        box-shadow: 0 0 0 4px ${({ theme }) => theme.primary}20;
+    }
+
+    &::-webkit-calendar-picker-indicator {
+        filter: ${({ theme }) => theme.bg === '#000000' ? 'invert(1)' : 'none'};
+        cursor: pointer;
+    }
+`;
+
+const QuickActions = styled.div`
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 8px;
+`;
+
+const QuickChip = styled.button`
+    padding: 10px 18px;
+    border-radius: 12px;
+    border: 1px solid ${({ theme }) => theme.text_secondary}25;
+    background: ${({ theme }) => theme.bg === '#000000' ? '#1A1A1A' : '#F1F5F9'};
+    color: ${({ theme }) => theme.text_secondary};
+    font-size: 13px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.25s ease;
+
+    &:hover {
+        background: ${({ theme }) => theme.primary}20;
+        color: ${({ theme }) => theme.primary};
+        border-color: ${({ theme }) => theme.primary}40;
+        transform: translateY(-2px);
+    }
+`;
 
 const Applications = () => {
-
+    const theme = useTheme();
     const [applications, setApplications] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [rangeModalOpen, setRangeModalOpen] = useState(false);
+    const [dateRange, setDateRange] = useState({
+        startDate: '',
+        endDate: new Date().toISOString().split('T')[0]
+    });
 
     const [searchTerm, setSearchTerm] = useState('');
     const [currentPage, setCurrentPage] = useState(1);
@@ -303,6 +502,28 @@ const Applications = () => {
     const endIndex = Math.min(startIndex + entriesPerPage, totalEntries);
     const currentApplications = filteredApplications.slice(startIndex, endIndex);
 
+    const viewDetails = (app) => {
+        if (!app.customDetails || Object.keys(app.customDetails).length === 0) {
+            Swal.fire('No Insights', 'This application was submitted without answering any dynamic detail questions.', 'info');
+            return;
+        }
+        
+        let htmlContent = '<div style="text-align: left; padding: 10px; font-size: 15px;">';
+        for (const [key, value] of Object.entries(app.customDetails)) {
+            const formattedKey = key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase());
+            htmlContent += `<p style="margin: 0 0 12px 0;"><strong>${formattedKey}:</strong> <span style="color: #555;">${value}</span></p>`;
+        }
+        htmlContent += '</div>';
+
+        Swal.fire({
+            title: 'Applicant Details',
+            html: htmlContent,
+            icon: 'info',
+            confirmButtonColor: '#1976d2',
+            confirmButtonText: 'Done'
+        });
+    };
+
 
     const handleAction = async (id, newStatus) => {
 
@@ -329,30 +550,114 @@ const Applications = () => {
             setApplications(prev => prev.map(app =>
                 app._id === id ? updatedApp : app
             ));
-            Swal.fire({
+            Toast.fire({
                 icon: 'success',
-                title: 'Updated!',
-                text: `Application ${newStatus.toLowerCase()} successfully.`,
-                timer: 1500,
-                showConfirmButton: false
+                title: `Application ${newStatus.toLowerCase()} successfully.`
             });
         } catch (error) {
             console.error("Error updating application status:", error);
-            Swal.fire({
+            Toast.fire({
                 icon: 'error',
-                title: 'Error!',
-                text: 'Failed to update status'
+                title: 'Failed to update status'
             });
             // Revert on failure
             setApplications(previousApplications);
         }
     };
 
+    const handleBulkDeleteSubmit = async () => {
+        if (!dateRange.startDate || !dateRange.endDate) {
+            Swal.fire('Error', 'Please select both start and end dates', 'error');
+            return;
+        }
+
+        const confirm = await Swal.fire({
+            title: 'Confirm Bulk Deletion',
+            text: `Are you sure you want to delete all applications from ${new Date(dateRange.startDate).toLocaleDateString()} to ${new Date(dateRange.endDate).toLocaleDateString()}?`,
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#ef5350',
+            confirmButtonText: 'Yes, Delete Permanently',
+            background: theme.bg === '#000000' ? '#111111' : '#FFFFFF',
+            color: theme.bg === '#000000' ? '#F1F5F9' : '#111111'
+        });
+
+        if (confirm.isConfirmed) {
+            setRangeModalOpen(false);
+            setLoading(true);
+            try {
+                const response = await bulkDeleteApplications(dateRange);
+                await fetchApplications();
+                Swal.fire({
+                    title: 'Deleted!',
+                    text: response.message,
+                    icon: 'success',
+                    background: theme.bg === '#000000' ? '#111111' : '#FFFFFF',
+                    color: theme.bg === '#000000' ? '#F1F5F9' : '#111111'
+                });
+            } catch (error) {
+                console.error("Error during bulk delete:", error);
+                Swal.fire({
+                    title: 'Error!',
+                    text: error.response?.data?.message || 'Failed to delete applications',
+                    icon: 'error',
+                    background: theme.bg === '#000000' ? '#111111' : '#FFFFFF',
+                    color: theme.bg === '#000000' ? '#F1F5F9' : '#111111'
+                });
+            } finally {
+                setLoading(false);
+            }
+        }
+    };
+
+    const setQuickRange = (days) => {
+        const end = new Date();
+        const start = new Date();
+        start.setDate(end.getDate() - days);
+        
+        setDateRange({
+            startDate: start.toISOString().split('T')[0],
+            endDate: end.toISOString().split('T')[0]
+        });
+    };
+
+    const setMonthRange = (monthOffset = 0) => {
+        const date = new Date();
+        date.setMonth(date.getMonth() - monthOffset);
+        
+        const firstDay = new Date(date.getFullYear(), date.getMonth(), 1);
+        const lastDay = new Date(date.getFullYear(), date.getMonth() + 1, 0);
+        
+        setDateRange({
+            startDate: firstDay.toISOString().split('T')[0],
+            endDate: lastDay.toISOString().split('T')[0]
+        });
+    };
+
     return (
         <Container>
             <Header>
-                <Title>Policy Applications</Title>
-                <Subtitle>Review and manage policy applications</Subtitle>
+                <div style={{ display: 'flex', justifyContent: 'space-between', alignItems: 'center', width: '100%', flexWrap: 'wrap', gap: '16px' }}>
+                    <div>
+                        <Title>Policy Applications</Title>
+                        <Subtitle>Review and manage policy applications</Subtitle>
+                    </div>
+                    <ActionButton
+                        $type="reject"
+                        onClick={() => setRangeModalOpen(true)}
+                        style={{
+                            padding: '12px 24px',
+                            height: 'auto',
+                            width: 'auto',
+                            background: '#ef535010',
+                            color: '#ef5350',
+                            border: '1px solid #ef535025',
+                            borderRadius: '12px'
+                        }}
+                    >
+                        <Delete sx={{ fontSize: '22px' }} /> Bulk Cleanup
+                    </ActionButton>
+                </div>
             </Header>
 
 
@@ -416,17 +721,19 @@ const Applications = () => {
                         <tbody>
                             {currentApplications.map((app) => (
                                 <Tr key={app._id}>
-                                    <Td>
-                                        <ApplicantName>{app.userId?.name || 'Unknown User'}</ApplicantName>
+                                    <Td data-label="Applicant Name">
+                                        <ApplicantName onClick={() => viewDetails(app)}>
+                                            {app.userId?.name || 'Unknown User'}
+                                        </ApplicantName>
                                     </Td>
-                                    <Td>{app.policyId?.title || 'Unknown Policy'}</Td>
-                                    <Td>{new Date(app.createdAt).toLocaleDateString()}</Td>
-                                    <Td>
+                                    <Td data-label="Policy Name">{app.policyId?.title || 'Unknown Policy'}</Td>
+                                    <Td data-label="Date">{new Date(app.createdAt).toLocaleDateString()}</Td>
+                                    <Td data-label="Status">
                                         <StatusBadge $status={app.status?.charAt(0).toUpperCase() + app.status?.slice(1).toLowerCase()}>
                                             {app.status?.charAt(0).toUpperCase() + app.status?.slice(1).toLowerCase()}
                                         </StatusBadge>
                                     </Td>
-                                    <Td $align="right">
+                                    <Td data-label="Actions" $align="right">
                                         <ActionsCell>
                                             {/* Slot 1: Approve (Visible) or Ghost (Hidden) */}
                                             <ActionButton
@@ -486,6 +793,68 @@ const Applications = () => {
                     />
                 )}
             </ContentCard>
+            {rangeModalOpen && (
+                <ModalOverlay onClick={(e) => e.target === e.currentTarget && setRangeModalOpen(false)}>
+                    <ModalContent>
+                        <ModalHeader>
+                            <Title style={{ fontSize: '22px' }}>Bulk Cleanup</Title>
+                            <Subtitle>Select a date range to delete applications permanently</Subtitle>
+                        </ModalHeader>
+
+                        <div style={{ display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                            <Label style={{ marginBottom: '-8px' }}>Quick Presets</Label>
+                            <QuickActions>
+                                <QuickChip onClick={() => setQuickRange(1)}>Last 24 Hours</QuickChip>
+                                <QuickChip onClick={() => setQuickRange(7)}>Last 7 Days</QuickChip>
+                                <QuickChip onClick={() => setQuickRange(30)}>Last 30 Days</QuickChip>
+                                <QuickChip onClick={() => setMonthRange(0)}>Current Month</QuickChip>
+                                <QuickChip onClick={() => setMonthRange(1)}>Previous Month</QuickChip>
+                                <QuickChip onClick={() => setQuickRange(365)}>Last Year</QuickChip>
+                            </QuickActions>
+                        </div>
+
+                        <RangeContainer>
+                            <DateField>
+                                <Label>From Date</Label>
+                                <StyledInput 
+                                    type="date" 
+                                    value={dateRange.startDate}
+                                    onChange={(e) => setDateRange({...dateRange, startDate: e.target.value})}
+                                />
+                            </DateField>
+                            <DateField>
+                                <Label>To Date</Label>
+                                <StyledInput 
+                                    type="date" 
+                                    value={dateRange.endDate}
+                                    onChange={(e) => setDateRange({...dateRange, endDate: e.target.value})}
+                                />
+                            </DateField>
+                        </RangeContainer>
+
+                        <div style={{ display: 'flex', gap: '12px', justifyContent: 'flex-end', marginTop: '12px' }}>
+                            <ActionButton 
+                                style={{ background: 'transparent', color: 'inherit', border: '1px solid transparent' }}
+                                onClick={() => setRangeModalOpen(false)}
+                            >
+                                Cancel
+                            </ActionButton>
+                            <ActionButton 
+                                $type="reject"
+                                style={{ 
+                                    padding: '12px 24px', 
+                                    background: '#EF4444', 
+                                    color: 'white',
+                                    boxShadow: '0 4px 14px rgba(239, 68, 68, 0.3)'
+                                }}
+                                onClick={handleBulkDeleteSubmit}
+                            >
+                                <Delete sx={{ fontSize: '18px' }} /> Delete Range
+                            </ActionButton>
+                        </div>
+                    </ModalContent>
+                </ModalOverlay>
+            )}
         </Container>
     );
 };

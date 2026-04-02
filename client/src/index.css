@@ -2,6 +2,7 @@
 
 * {
   box-sizing: border-box;
+  -webkit-tap-highlight-color: transparent;
 }
 
 body {
@@ -49,4 +50,9 @@ code {
   flex: 1;
   padding: 20px;
   overflow-y: auto;
+}
+
+.toast-below-nav {
+  margin-top: 75px !important;
+  z-index: 9999 !important;
 }

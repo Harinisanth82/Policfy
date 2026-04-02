@@ -33,6 +33,11 @@ const policySchema = new mongoose.Schema({
     isActive: {
         type: Boolean,
         default: true
+    },
+    analysis: {
+        risk: String,
+        reasons: [String],
+        complexity: String
     }
 }, { timestamps: true });
 

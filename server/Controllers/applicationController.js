@@ -5,7 +5,8 @@ export const applyPolicy = async (req, res) => {
     try {
         const application = new Application({
             userId: req.body.userId,
-            policyId: req.body.policyId
+            policyId: req.body.policyId,
+            customDetails: req.body.customDetails || {}
         });
 
         // Check if application already exists
@@ -93,6 +94,33 @@ export const deleteApplication = async (req, res) => {
 
         await application.deleteOne();
         res.json({ message: "Application deleted" });
+    } catch (error) {
+        res.status(500).json({ message: error.message });
+    }
+};
+
+// Bulk Delete Applications by Age (Admin)
+export const bulkDeleteApplications = async (req, res) => {
+    try {
+        const { startDate, endDate } = req.body;
+
+        if (!startDate || !endDate) {
+            return res.status(400).json({ message: "Please provide both start and end dates." });
+        }
+
+        const query = {
+            createdAt: {
+                $gte: new Date(startDate),
+                $lte: new Date(endDate)
+            }
+        };
+        
+        const result = await Application.deleteMany(query);
+
+        res.json({ 
+            message: `Successfully deleted ${result.deletedCount} applications between selected dates.`,
+            deletedCount: result.deletedCount 
+        });
     } catch (error) {
         res.status(500).json({ message: error.message });
     }

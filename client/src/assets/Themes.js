@@ -31,33 +31,33 @@ export const lightTheme = {
 };
 
 export const darkTheme = {
-    bg: "#09090B",        // Zinc 950 (Deep dark gray)
-    bgLight: "#18181B",   // Zinc 900
-    primary: "#8B5CF6",   // Attractive Violet
-    text_primary: "#FAFAFA", // Off-white for high contrast but low eye strain
-    text_secondary: "#A1A1AA", // Muted light gray (Zinc 400)
-    card: "#18181B",      // Zinc 900
-    button: "#8B5CF6",
-    primary_hover: "#7C3AED", // Deeper Violet
+    bg: "#000000",        // Pure Black
+    bgLight: "#080808",   // Slightly lighter black
+    primary: "#2563EB",   // Professional Royal Blue
+    text_primary: "#F1F5F9", // Slate 100 (Elegant white)
+    text_secondary: "#94A3B8", // Slate 400 (Muted gray)
+    card: "#111111",      // Charcoal black for depth
+    button: "#2563EB",
+    primary_hover: "#1D4ED8", // Deeper Blue
 
-    // Extra properties from previous Themes.jsx
-    secondary: "#A78BFA",
-    disabled: "#52525B",
-    menubar: "#09090B",
-    navbar: "#18181B",
-    arrow: "#A1A1AA",
-    menu_primary_text: "#FAFAFA",
-    menu_secondary_text: "#A1A1AA",
-    table_header: "#27272A", // Zinc 800
+    // Extra properties for consistency
+    secondary: "#60A5FA", // Light Blue
+    disabled: "#334155",
+    menubar: "#000000",
+    navbar: "#0D0D0D",
+    arrow: "#94A3B8",
+    menu_primary_text: "#F1F5F9",
+    menu_secondary_text: "#94A3B8",
+    table_header: "#161B22", 
     black: "#000000",
     white: "#FFFFFF",
-    shadow: "#00000040",
-    green: "#10B981",
-    yellow: "#F59E0B",
-    red: "#EF4444",
+    shadow: "#00000099",
+    green: "#10B981",    // Emerald
+    yellow: "#F59E0B",   // Amber
+    red: "#EF4444",      // Rose
     orange: "#F97316",
-    popup: "#18181B",
-    popup_text_primary: "#FAFAFA",
-    popup_text_secondary: "#A1A1AA",
-    output_node: "#27272A",
+    popup: "#0D0D0D",
+    popup_text_primary: "#F1F5F9",
+    popup_text_secondary: "#94A3B8",
+    output_node: "#1F2937",
 };

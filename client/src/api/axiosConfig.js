@@ -3,32 +3,22 @@ import store from '../redux/store';
 import { logout } from '../redux/userSlice';
 
 const instance = axios.create({
-    baseURL: 'https://policfy-api.onrender.com/api',
-    timeout: 10000,
+    baseURL: process.env.REACT_APP_API_URL || 'http://localhost:5001/api',
+    timeout: 15000, // Increased timeout for better stability
 });
 
 // Add a request interceptor
 instance.interceptors.request.use(
     (config) => {
         try {
-            let token = null;
+            const user = JSON.parse(localStorage.getItem('user'));
+            let token = user?.token || user?.accessToken || user?.data?.token;
 
-            // 1. Check 'user' key directly
-            const userStr = localStorage.getItem('user');
-            if (userStr) {
-                const user = JSON.parse(userStr);
-                token = user?.token || user?.accessToken || user?.data?.token;
-            }
-
-            // 2. Check Redux Persist root if no token found
             if (!token) {
-                const persistRoot = localStorage.getItem('persist:root');
-                if (persistRoot) {
-                    const root = JSON.parse(persistRoot);
-                    if (root.user) {
-                        const userSlice = JSON.parse(root.user);
-                        token = userSlice?.currentUser?.token || userSlice?.token;
-                    }
+                const persistRoot = JSON.parse(localStorage.getItem('persist:root'));
+                if (persistRoot?.user) {
+                    const userSlice = JSON.parse(persistRoot.user);
+                    token = userSlice?.currentUser?.token || userSlice?.token;
                 }
             }
 
@@ -36,7 +26,7 @@ instance.interceptors.request.use(
                 config.headers.Authorization = `Bearer ${token}`;
             }
         } catch (err) {
-            console.error("Error retrieving token:", err);
+            // Silently fail if JSON parsing or localStorage access fails
         }
         return config;
     },

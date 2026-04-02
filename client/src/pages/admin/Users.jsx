@@ -161,10 +161,25 @@ const Table = styled.table`
     width: 100%;
     border-collapse: collapse;
     min-width: 800px;
+
+    @media (max-width: 768px) {
+        min-width: 100%;
+        display: block;
+        
+        tbody {
+            display: block;
+            width: 100%;
+            box-sizing: border-box;
+        }
+    }
 `;
 
 const Thead = styled.thead`
     border-bottom: 2px solid ${({ theme }) => theme.text_secondary}10;
+
+    @media (max-width: 768px) {
+        display: none;
+    }
 `;
 
 const Th = styled.th`
@@ -186,6 +201,19 @@ const Tr = styled.tr`
     &:hover {
         background: ${({ theme }) => theme.bgLight}50;
     }
+
+    @media (max-width: 768px) {
+        display: flex;
+        flex-direction: column;
+        background: ${({ theme }) => theme.bgLight}30;
+        border: 1px solid ${({ theme }) => theme.text_secondary}20;
+        border-radius: 12px;
+        padding: 16px;
+        margin-bottom: 16px;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.03);
+        width: 100%;
+        box-sizing: border-box;
+    }
 `;
 
 const Td = styled.td`
@@ -194,6 +222,38 @@ const Td = styled.td`
     color: ${({ theme }) => theme.text_primary};
     vertical-align: middle;
     text-align: ${({ $align }) => $align || 'left'};
+
+    @media (max-width: 768px) {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 10px 0;
+        text-align: right;
+        border-bottom: 1px dashed ${({ theme }) => theme.text_secondary}20;
+        width: 100%;
+        box-sizing: border-box;
+        overflow-wrap: anywhere;
+        word-break: break-word;
+        
+        &:last-child {
+            border-bottom: none;
+            padding-bottom: 0;
+            padding-top: 16px;
+            margin-top: 4px;
+            justify-content: flex-end;
+        }
+
+        &::before {
+            content: attr(data-label);
+            font-weight: 600;
+            color: ${({ theme }) => theme.text_secondary};
+            font-size: 12px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            margin-right: 16px;
+            flex-shrink: 0;
+        }
+    }
 `;
 
 
@@ -568,16 +628,16 @@ const Users = () => {
                         <tbody>
                             {currentUsers.map((user) => (
                                 <Tr key={user._id}>
-                                    <Td>
+                                    <Td data-label="Name">
                                         <UserName>{user.name}</UserName>
                                     </Td>
-                                    <Td>{user.email}</Td>
-                                    <Td>
+                                    <Td data-label="Email">{user.email}</Td>
+                                    <Td data-label="Status">
                                         <StatusBadge $active={true}>
                                             Active
                                         </StatusBadge>
                                     </Td>
-                                    <Td $align="right">
+                                    <Td data-label="Actions" $align="right">
                                         <ActionsCell>
                                             <ActionButton
                                                 $type="edit"
