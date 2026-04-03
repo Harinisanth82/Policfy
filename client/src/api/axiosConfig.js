@@ -2,12 +2,20 @@ import axios from 'axios';
 import store from '../redux/store';
 import { logout } from '../redux/userSlice';
 
+const getBaseURL = () => {
+    let url = process.env.REACT_APP_API_URL || 'http://localhost:5001/api';
+    if (url.includes('onrender.com') && !url.endsWith('/api')) {
+        url = url.endsWith('/') ? url + 'api' : url + '/api';
+    }
+    return url;
+};
+
 const instance = axios.create({
-    baseURL: process.env.REACT_APP_API_URL || 'http://localhost:5001/api',
-    timeout: 15000, // Increased timeout for better stability
+    baseURL: getBaseURL(),
+    timeout: 30000, // 30s timeout to handle Render free tier spin-up
 });
 
-// Add a request interceptor
+// Request interceptor
 instance.interceptors.request.use(
     (config) => {
         try {
@@ -21,28 +29,22 @@ instance.interceptors.request.use(
                     token = userSlice?.currentUser?.token || userSlice?.token;
                 }
             }
-
             if (token) {
                 config.headers.Authorization = `Bearer ${token}`;
             }
-        } catch (err) {
-            // Silently fail if JSON parsing or localStorage access fails
-        }
+        } catch (err) {}
         return config;
     },
-    (error) => {
-        return Promise.reject(error);
-    }
+    (error) => Promise.reject(error)
 );
 
-// Add a response interceptor to handle 401 errors
+// Response interceptor
 instance.interceptors.response.use(
     (response) => response,
     (error) => {
         if (error.response && error.response.status === 401) {
             store.dispatch(logout());
             localStorage.removeItem('user');
-            // Check if we are already on login page to avoid redirect loops
             if (window.location.pathname !== '/login') {
                 window.location.href = '/login';
             }
