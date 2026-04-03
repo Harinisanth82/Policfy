@@ -1,4 +1,4 @@
-// Nodemon Trigger
+// server/index.js
 import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
@@ -19,10 +19,13 @@ const PORT = process.env.PORT || 5000;
 
 app.use(helmet());
 app.use(compression());
-app.use(cors());
+// Updated CORS to support your CLIENT_URL
+app.use(cors({
+    origin: process.env.CLIENT_URL || "http://localhost:3000",
+    methods: ["GET", "POST", "PUT", "DELETE", "PATCH"],
+    credentials: true
+}));
 app.use(express.json());
-
-
 
 // routes
 app.use("/api/auth", authRoutes);
