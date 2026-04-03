@@ -212,29 +212,32 @@ const Td = styled.td`
 
     @media (max-width: 768px) {
         display: flex;
-        justify-content: space-between;
-        align-items: center;
-        padding: 10px 0;
-        text-align: right;
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 8px;
+        padding: 12px 0;
+        text-align: left;
         border-bottom: 1px dashed ${({ theme }) => theme.text_secondary}20;
+        word-break: break-word;
+        width: 100%;
+        box-sizing: border-box;
         
         &:last-child {
             border-bottom: none;
             padding-bottom: 0;
             padding-top: 16px;
             margin-top: 4px;
-            justify-content: flex-end;
+            align-items: flex-end;
         }
 
         &::before {
             content: attr(data-label);
-            font-weight: 600;
+            font-weight: 700;
             color: ${({ theme }) => theme.text_secondary};
-            font-size: 12px;
+            font-size: 11px;
+            opacity: 0.8;
             text-transform: uppercase;
-            letter-spacing: 0.5px;
-            margin-right: 16px;
-            flex-shrink: 0;
+            letter-spacing: 1px;
         }
     }
 `;
@@ -729,8 +732,8 @@ const Applications = () => {
                                     <Td data-label="Policy Name">{app.policyId?.title || 'Unknown Policy'}</Td>
                                     <Td data-label="Date">{new Date(app.createdAt).toLocaleDateString()}</Td>
                                     <Td data-label="Status">
-                                        <StatusBadge $status={app.status?.charAt(0).toUpperCase() + app.status?.slice(1).toLowerCase()}>
-                                            {app.status?.charAt(0).toUpperCase() + app.status?.slice(1).toLowerCase()}
+                                        <StatusBadge $status={(app.status || 'pending').charAt(0).toUpperCase() + (app.status || 'pending').slice(1).toLowerCase()}>
+                                            {(app.status || 'pending').charAt(0).toUpperCase() + (app.status || 'pending').slice(1).toLowerCase()}
                                         </StatusBadge>
                                     </Td>
                                     <Td data-label="Actions" $align="right">

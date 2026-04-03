@@ -266,16 +266,24 @@ const MyApplications = () => {
             try {
                 const data = await getUserApplications(currentUser._id);
                 // Map backend data to frontend structure
-                const mappedApps = data.map(app => ({
-                    id: app._id,
-                    policyId: app.policyId?._id,
-                    policyName: app.policyId?.title || 'Unknown Policy',
-                    description: app.policyId?.description || 'The policy is no longer available',
-                    category: app.policyId?.category || 'General',
-                    premium: `₹${app.policyId?.premium || 0}`,
-                    appliedDate: new Date(app.createdAt).toLocaleDateString(),
-                    status: app.status.charAt(0).toUpperCase() + app.status.slice(1)
-                }));
+                if (!Array.isArray(data)) {
+                    setApplications([]);
+                    return;
+                }
+
+                const mappedApps = data.map(app => {
+                    const status = app.status || 'pending';
+                    return {
+                        id: app._id,
+                        policyId: app.policyId?._id,
+                        policyName: app.policyId?.title || 'Unknown Policy',
+                        description: app.policyId?.description || 'Detailed policy information is currently unavailable.',
+                        category: app.policyId?.category || 'General',
+                        premium: `₹${app.policyId?.premium || 0}`,
+                        appliedDate: app.createdAt ? new Date(app.createdAt).toLocaleDateString() : 'Date N/A',
+                        status: status.charAt(0).toUpperCase() + status.slice(1).toLowerCase()
+                    };
+                });
                 setApplications(mappedApps);
             } catch (error) {
                 console.error("Error fetching applications:", error);

@@ -20,7 +20,8 @@ export const applyPolicy = async (req, res) => {
         }
 
         await application.save();
-        res.json(application);
+        const populatedApp = await application.populate("policyId");
+        res.json(populatedApp);
     } catch (error) {
         res.status(500).json({ message: error.message });
     }

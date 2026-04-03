@@ -201,45 +201,73 @@ const ViewPolicies = () => {
 
     const [policies, setPolicies] = useState([]);
     const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(false);
     const [isApplying, setIsApplying] = useState(false);
 
     React.useEffect(() => {
         const fetchData = async () => {
             setLoading(true);
             try {
+                setError(false);
                 const [policiesData, apps] = await Promise.all([
                     getAllPolicies(),
                     currentUser && currentUser._id ? getUserApplications(currentUser._id) : Promise.resolve([])
                 ]);
 
-                const mappedPolicies = policiesData.map(p => ({
-                    id: p._id,
-                    title: p.title,
-                    category: p.category,
-                    description: p.description,
-                    coverage: String(p.coverage).startsWith('₹') ? p.coverage : `₹${p.coverage}`,
-                    premium: String(p.premium).startsWith('₹') ? p.premium : `₹${p.premium}`,
-                    premiumVal: String(p.premium).startsWith('₹') ? p.premium : `₹${p.premium}`,
-                    isActive: p.isActive,
-                    analysis: p.analysis
-                }));
+                if (!Array.isArray(policiesData)) {
+                    console.error("Expected array for policies, got:", policiesData);
+                    setPolicies([]);
+                    return;
+                }
+
+                const mappedPolicies = policiesData.map(p => {
+                    const coverage = p.coverage ? (String(p.coverage).startsWith('₹') ? p.coverage : `₹${p.coverage}`) : '₹0';
+                    const premium = p.premium ? (String(p.premium).startsWith('₹') ? p.premium : `₹${p.premium}`) : '₹0';
+
+                    return {
+                        id: p._id,
+                        title: p.title || 'Untitled Policy',
+                        category: p.category || 'General',
+                        description: p.description || 'No description available.',
+                        coverage: coverage,
+                        premium: premium,
+                        premiumVal: premium,
+                        isActive: p.isActive,
+                        analysis: p.analysis
+                    };
+                });
                 setPolicies(mappedPolicies);
 
-                if (apps.length > 0) {
+                if (Array.isArray(apps) && apps.length > 0) {
                     dispatch(setApplications(apps));
                 }
             } catch (error) {
                 console.error("Error fetching data:", error);
+                setError(true);
             } finally {
                 setLoading(false);
             }
         };
 
         fetchData();
-    }, [currentUser, dispatch]);
+    }, [currentUser?._id, dispatch]);
 
     if (loading) {
         return <Loader />;
+    }
+
+    if (error) {
+        return (
+            <Container style={{ justifyContent: 'center', alignItems: 'center' }}>
+                <div style={{ textAlign: 'center', display: 'flex', flexDirection: 'column', gap: '16px' }}>
+                    <h2 style={{ color: 'red' }}>Server Unreachable</h2>
+                    <p>We couldn't connect to the server. Please check your internet or try again later.</p>
+                    <Button onClick={() => window.location.reload()} style={{ width: 'fit-content', margin: '0 auto', padding: '12px 24px' }}>
+                        Retry Connection
+                    </Button>
+                </div>
+            </Container>
+        );
     }
 
     const filteredPolicies = policies.filter(policy =>
@@ -266,7 +294,7 @@ const ViewPolicies = () => {
 
     const isApplied = selectedPolicy && currentUser?.applications?.some(app => {
         const appId = (app.policyId && typeof app.policyId === 'object') ? app.policyId._id : app.policyId;
-        return appId === selectedPolicy.id;
+        return String(appId) === String(selectedPolicy.id);
     });
 
     const handleApply = async () => {

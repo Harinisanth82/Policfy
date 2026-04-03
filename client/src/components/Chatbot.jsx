@@ -173,6 +173,11 @@ const InputArea = styled.div`
     display: flex;
     gap: 10px;
     align-items: center;
+
+    @media (max-width: 480px) {
+        padding: 12px 14px;
+        gap: 8px;
+    }
 `;
 
 const InputField = styled.input`
@@ -186,6 +191,7 @@ const InputField = styled.input`
     color: ${({ theme }) => theme.text_primary || '#333'};
     background: ${({ theme }) => theme.bgLight || '#f9fafb'};
     transition: all 0.2s ease;
+    min-width: 0;
 
     &:focus {
         border-color: ${({ theme }) => theme.primary || '#1976d2'};
@@ -201,6 +207,7 @@ const SendButton = styled.button`
     border-radius: 10px;
     width: 40px;
     height: 40px;
+    flex-shrink: 0;
     display: flex;
     align-items: center;
     justify-content: center;

@@ -245,7 +245,7 @@ const Login = () => {
   const handleGoogleLogin = () => {
     const GOOGLE_CLIENT_ID = "1080134266389-mb95890qau13qhr4ijgdqn4vnbade5mh.apps.googleusercontent.com";
     
-    // Updated: Dynamically calculate the backend redirect URL based on your current API environment
+    // Dynamically calculate the backend redirect URL based on your current API environment
     const apiBase = process.env.REACT_APP_API_URL?.replace('/api', '') || "http://localhost:5001";
     const REDIRECT_URI = `${apiBase}/api/auth/google/callback`;
     

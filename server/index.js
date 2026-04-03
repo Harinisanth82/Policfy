@@ -1,4 +1,4 @@
-// server/index.js
+// Nodemon Trigger - Port Fix
 import express from "express";
 import cors from "cors";
 import dotenv from "dotenv";
@@ -13,6 +13,8 @@ import dashboardRoutes from "./Routes/dashboardRoutes.js";
 import chatRoutes from "./Routes/chatRoutes.js";
 
 dotenv.config({ override: true });
+console.log("Loading environment variables...");
+console.log("MONGO_URI starting with:", process.env.MONGO_URI ? process.env.MONGO_URI.substring(0, 20) + "..." : "undefined");
 
 const app = express();
 const PORT = process.env.PORT || 5000;

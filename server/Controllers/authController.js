@@ -150,7 +150,10 @@ export const googleAuthCallback = async (req, res) => {
         user.currentSessionToken = token;
         await user.save();
 
+        // Use dynamic client URL based on environment
         const frontendUrl = process.env.CLIENT_URL || 'http://localhost:3000';
+
+        // Redirect to client with token
         res.redirect(`${frontendUrl}/login?token=${token}`);
     } catch (error) {
         console.error("Google Auth Callback Error:", error);
