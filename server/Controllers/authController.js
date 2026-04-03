@@ -1,3 +1,4 @@
+// server/Controllers/authController.js
 import User from '../Models/User.js';
 import jwt from 'jsonwebtoken';
 import bcrypt from 'bcryptjs';
@@ -23,33 +24,19 @@ const getRedirectUrl = (role) => {
 };
 
 // @desc    Register new user
-// @route   POST /api/auth/register
-// @access  Public
 export const registerUser = async (req, res) => {
     const { name, email, password } = req.body;
-
     if (!name || !email || !password) {
         return res.status(400).json({ message: 'Please add all fields' });
     }
-
-    // Check if user exists
     const userExists = await User.findOne({ email });
     if (userExists) {
         return res.status(400).json({ message: 'User already exists' });
     }
-
-    // Create user
-    const user = await User.create({
-        name,
-        email,
-        password
-    });
-
+    const user = await User.create({ name, email, password });
     if (user) {
-        // Save session token
         user.currentSessionToken = generateToken(user._id);
         await user.save();
-
         res.status(201).json({
             _id: user._id,
             name: user.name,
@@ -64,20 +51,13 @@ export const registerUser = async (req, res) => {
 };
 
 // @desc    Authenticate a user
-// @route   POST /api/auth/login
-// @access  Public
 export const loginUser = async (req, res) => {
     const { email, password } = req.body;
-
-    // Check for user email
     const user = await User.findOne({ email });
-
     if (user && (await user.matchPassword(password))) {
-        // Save session token
         const token = generateToken(user._id);
         user.currentSessionToken = token;
         await user.save();
-
         res.json({
             _id: user._id,
             name: user.name,
@@ -92,8 +72,6 @@ export const loginUser = async (req, res) => {
 };
 
 // @desc    Get user data
-// @route   GET /api/auth/me
-// @access  Private
 export const getMe = async (req, res) => {
     res.status(200).json({
         ...req.user._doc,
@@ -102,11 +80,8 @@ export const getMe = async (req, res) => {
 };
 
 // @desc    Google Login
-// @route   POST /api/auth/google
-// @access  Public
 export const googleLogin = async (req, res) => {
     const { code } = req.body;
-
     try {
         const client = new OAuth2Client(
             process.env.GOOGLE_CLIENT_ID,
@@ -119,27 +94,19 @@ export const googleLogin = async (req, res) => {
             audience: process.env.GOOGLE_CLIENT_ID,
         });
         const { name, email, picture } = ticket.getPayload();
-
         let user = await User.findOne({ email });
-
         if (!user) {
-            // Create a new user if not exists
             const randomPassword = Math.random().toString(36).slice(-8) + Math.random().toString(36).slice(-8);
-
             user = await User.create({
                 name,
                 email,
                 password: randomPassword,
-                role: 'user', // Default role
-                // img: picture // Assuming User model has img field? Verify schema.
+                role: 'user',
             });
         }
-
-        // Save session token
         const token = generateToken(user._id);
         user.currentSessionToken = token;
         await user.save();
-
         res.status(200).json({
             _id: user._id,
             name: user.name,
@@ -148,7 +115,6 @@ export const googleLogin = async (req, res) => {
             redirectUrl: getRedirectUrl(user.role),
             token: token
         });
-
     } catch (error) {
         console.error("Google Login Error:", error);
         res.status(500).json({ message: 'Google Login failed' });
@@ -156,17 +122,10 @@ export const googleLogin = async (req, res) => {
 };
 
 // @desc    Google Auth Callback
-// @route   GET /api/auth/google/callback
-// @access  Public
 export const googleAuthCallback = async (req, res) => {
     const { code } = req.query;
-
     try {
-        // Use dynamic redirect URL based on environment or fallback to production Render URL
-        const backendUrl = process.env.NODE_ENV === 'production'
-            ? 'https://policfy-api.onrender.com'
-            : (process.env.SERVER_URL || 'http://localhost:5001');
-
+        const backendUrl = process.env.SERVER_URL || 'http://localhost:5001';
         const redirectUrl = `${backendUrl}/api/auth/google/callback`;
 
         const client = new OAuth2Client(
@@ -183,40 +142,20 @@ export const googleAuthCallback = async (req, res) => {
             audience: process.env.GOOGLE_CLIENT_ID,
         });
         const { name, email, picture } = ticket.getPayload();
-
         let user = await User.findOne({ email });
-
         if (!user) {
-            // Create a new user if not exists
             const randomPassword = Math.random().toString(36).slice(-8) + Math.random().toString(36).slice(-8);
-
-            user = await User.create({
-                name,
-                email,
-                password: randomPassword,
-                role: 'user', // Default role
-            });
+            user = await User.create({ name, email, password: randomPassword, role: 'user' });
         }
-
-        // Save session token
         const token = generateToken(user._id);
         user.currentSessionToken = token;
         await user.save();
 
-        // Use dynamic client URL based on environment or fallback to production Netlify URL
-        const frontendUrl = process.env.NODE_ENV === 'production'
-            ? 'https://policfy.netlify.app' // Updated exact Netlify URL
-            : (process.env.CLIENT_URL || 'http://localhost:3000');
-
-        // Redirect to client with token
+        const frontendUrl = process.env.CLIENT_URL || 'http://localhost:3000';
         res.redirect(`${frontendUrl}/login?token=${token}`);
-
     } catch (error) {
         console.error("Google Auth Callback Error:", error);
-        const frontendUrl = process.env.NODE_ENV === 'production'
-            ? 'https://policfy.netlify.app' // Updated exact Netlify URL
-            : (process.env.CLIENT_URL || 'http://localhost:3000');
-
+        const frontendUrl = process.env.CLIENT_URL || 'http://localhost:3000';
         res.redirect(`${frontendUrl}/login?error=GoogleAuthFailed`);
     }
 };
